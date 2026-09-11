@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -eu
 
+# EXIT must retain this state even when Bash unwinds main after an error.
+target=''
+lock=''
+stage=''
+backup=''
+
 usage() {
   cat <<'EOF'
 Install the Eyjafjalla Codex pet.
@@ -61,7 +67,7 @@ backup_current() {
 
 main() {
   local source_dir='' ref=main remove=false explicit_ref=false name base
-  local codex_root pets_root target lock stage='' backup=''
+  local codex_root pets_root
   while [ "$#" -gt 0 ]; do
     case "$1" in
       --source)
@@ -120,7 +126,6 @@ main() {
     fi
     printf 'Open Settings > Pets > Refresh, then select 艾雅法拉 · Eyjafjalla.\n'
   fi
-  # Run cleanup before local variables go out of scope.
   exit 0
 }
 

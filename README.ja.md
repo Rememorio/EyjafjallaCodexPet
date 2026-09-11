@@ -1,96 +1,71 @@
 # エイヤフィヤトラ · Eyjafjalla
 
-**コードを書く時間に、エイヤフィヤトラを。** Codex デスクトップアプリ向けの『アークナイツ』非公式ファン制作ペットです。
+デスクトップに、エイヤフィヤトラを。
 
-[简体中文](README.md) · [English](README.en.md) · **日本語**
-
-[![Validate](https://github.com/Rememorio/EyjafjallaCodexPet/actions/workflows/validate.yml/badge.svg)](https://github.com/Rememorio/EyjafjallaCodexPet/actions/workflows/validate.yml)
-[![License: MIT — code & docs](https://img.shields.io/badge/code_%26_docs-MIT-blue.svg)](LICENSE)
+『アークナイツ』のエイヤフィヤトラを題材にした非公式の Codex ペットです。カーソルを目で追い、手を振り、小さく跳ねながら、作業の時間に寄り添います。
 
 <p align="center">
-  <img src="docs/previews/idle.gif" width="192" height="208" alt="待機中のエイヤフィヤトラ">
-  <img src="docs/previews/waving.gif" width="192" height="208" alt="手を振るエイヤフィヤトラ">
-  <img src="docs/previews/look-loop.gif" width="192" height="208" alt="周囲を見回すエイヤフィヤトラ">
+  <img src="docs/previews/look-loop.png" width="96" height="104" alt="Eyjafjalla">
 </p>
 
-茶色の巻き髪、角、赤い瞳、そして赤と白の衣装。おなじみの特徴を残した、**9 種類の状態アニメーションと 16 方向の視線**を持つペットです。背景透過・Codex v2 形式に対応しています。
+[![Validate](https://github.com/Rememorio/EyjafjallaCodexPet/actions/workflows/validate.yml/badge.svg)](https://github.com/Rememorio/EyjafjallaCodexPet/actions/workflows/validate.yml) [![Pet v2](https://img.shields.io/badge/Codex_Pet-v2-f2a1a8)](pets/eyjafjalla/pet.json) [![License: MIT — code & docs](https://img.shields.io/badge/code_%26_docs-MIT-blue.svg)](LICENSE)
 
 ## インストール
 
-ターミナルで実行してください。
+ターミナルに貼り付けて実行します。リポジトリのクローンは不要です。
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Rememorio/EyjafjallaCodexPet/main/install.sh | bash
 ```
 
-**設定 → ペット → 更新**を開き、**艾雅法拉 · Eyjafjalla** を選択します。コマンドメニューまたは `/pet` からペットを呼び出せます。一覧に表示されない場合は、デスクトップアプリを再起動してください。項目名はアプリのバージョンによって異なる場合があります。[公式ガイド](https://learn.chatgpt.com/en/docs/pets)も参照できます。
+<strong>設定 → ペット → 更新</strong>を開き、<strong>艾雅法拉 · Eyjafjalla</strong>を選択します。コマンドメニューまたは `/pet` から呼び出せます。古い動作が表示される場合は、ペットを選び直すか、アプリを再起動してください。
 
-カスタム **v2** ペットに対応した Codex デスクトップアプリが必要です。Bash インストーラーは macOS / Linux 向けで、`curl` と `shasum` または `sha256sum` を使用します。ファイルのインストールが成功しても、その環境でペット機能を利用できるとは限りません。本パッケージはデスクトップ用です。Web 版の 1536 × 1872 アップロード形式には対応せず、Web 版へ自動同期されません。
+カスタム v2 ペット対応の Codex デスクトップアプリが必要です。インストーラーは macOS / Linux の Bash 環境で、`curl` とシステムの SHA-256 ツールを使います。`sudo`、Python、API キーは不要です。
 
-インストール先は `~/.codex/pets/eyjafjalla/` です。`CODEX_HOME` を設定している場合は `$CODEX_HOME/pets/eyjafjalla/` を使用します。`sudo`、Python、API キーは不要です。
+## デスクトップで一緒に
 
-<details>
-<summary>スクリプトの確認・オフラインでのインストール・手動インストール</summary>
+9 種類の状態アニメーションと、16 方向の頭・視線の動きを収録しています。プレビューは配布パッケージと同じフレーム・再生間隔です。
 
-リポジトリを取得すると、スクリプトを確認してからローカルの素材をインストールできます。
+<table>
+<tr>
+<td align="center" width="240"><strong>待機</strong><br><img src="docs/previews/idle.png" width="96" height="104" alt="待機"></td>
+<td align="center" width="240"><strong>右へ移動</strong><br><img src="docs/previews/running-right.png" width="96" height="104" alt="右へ移動"></td>
+<td align="center" width="240"><strong>左へ移動</strong><br><img src="docs/previews/running-left.png" width="96" height="104" alt="左へ移動"></td>
+</tr>
+<tr>
+<td align="center" width="240"><strong>手を振る</strong><br><img src="docs/previews/waving.png" width="96" height="104" alt="手を振る"></td>
+<td align="center" width="240"><strong>小さなジャンプ</strong><br><img src="docs/previews/jumping.png" width="96" height="104" alt="小さなジャンプ"></td>
+<td align="center" width="240"><strong>しょんぼり</strong><br><img src="docs/previews/failed.png" width="96" height="104" alt="しょんぼり"></td>
+</tr>
+<tr>
+<td align="center" width="240"><strong>返事を待つ</strong><br><img src="docs/previews/waiting.png" width="96" height="104" alt="返事を待つ"></td>
+<td align="center" width="240"><strong>作業中</strong><br><img src="docs/previews/running.png" width="96" height="104" alt="作業中"></td>
+<td align="center" width="240"><strong>確認中</strong><br><img src="docs/previews/review.png" width="96" height="104" alt="確認中"></td>
+</tr>
+</table>
 
-```bash
-git clone https://github.com/Rememorio/EyjafjallaCodexPet.git
-cd EyjafjallaCodexPet
-bash install.sh --source ./pets/eyjafjalla
-```
-
-手動の場合は、`pets/eyjafjalla/` フォルダー全体を Codex データディレクトリの `pets/` 内にコピーしてください。`pet.json` と `spritesheet.webp` は同じフォルダーに配置します。
-
-確認済みのリビジョンを使うには、そのコミットの `install.sh` を取得し、`bash install.sh --ref <完全なコミットハッシュ>` を実行します。既存のブランチ名やタグ名も指定できます。
-
-</details>
-
-## アニメーション
-
-| 動作 | 状態 |
-| --- | --- |
-| 待機・右移動・左移動 | 普段の待機や移動 |
-| 手を振る・ジャンプ | 挨拶やお祝い |
-| 失敗・入力待ち | タスクの問題や入力の待機 |
-| 作業・レビュー | タスクの実行や結果の確認 |
-| 16 方向の視線 | 方向に応じた視線とニュートラルな視線 |
-
-各アニメーションの再生タイミングはデスクトップアプリが制御します。隣り合う視線の一部は変化が小さいため、アニメーションプレビューでご確認ください。
-
-<p align="center">
-  <img src="docs/previews/jumping.gif" width="192" height="208" alt="ジャンプ">
-  <img src="docs/previews/running-right.gif" width="192" height="208" alt="右への移動">
-</p>
-
-[全アニメーションの一覧](docs/spritesheet-preview.png) · [16 方向の視線](docs/look-directions.png) · [状態の切り替え](docs/previews/state-transitions.gif)
+カーソルの方向へ顔を向け、重ねると小さくジャンプします。作業中・返事待ち・完了などの状態は Codex が切り替えます。プレビューは可逆圧縮の APNG で、半透明の輪郭を保ち、ライト・ダーク両方のテーマに対応します。
 
 ## 更新とアンインストール
 
-**更新：**インストールコマンドを再実行します。同じファイルは置き換えません。更新がある場合、元のフォルダー全体を Codex データディレクトリ内の `pet-backups/eyjafjalla.*/pet/` に保存し、保存先を表示します。ダウンロードやチェックサムの検証に失敗しても、既存のペットは保持されます。
+<strong>更新</strong>：インストールコマンドを再実行します。同じファイルはそのまま保持します。新版は検証後に入れ替え、旧フォルダー全体のバックアップ先を表示します。
 
-**アンインストール：**
+<strong>アンインストール</strong>：
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Rememorio/EyjafjallaCodexPet/main/install.sh | bash -s -- --uninstall
 ```
 
-アンインストール時もバックアップを残します。復元する場合は、現在の `pets/eyjafjalla/` があれば別の場所に移し、バックアップ内の `pet/` をコピーして `eyjafjalla` に名前を変更してください。不要になったバックアップは手動で削除できます。
+既定の保存先は `~/.codex/pets/eyjafjalla/` です。`CODEX_HOME` を設定している場合は、その配下を使います。アンインストール時も復元用に旧ペットを残します。オフラインでの導入、リビジョン指定、復元は[インストールの詳細](docs/installation.md)をご覧ください。
 
-## 構成とコントリビューション
+## 改善への参加
 
-```text
-pets/eyjafjalla/     インストール用パッケージと SHA-256 チェックサム
-assets/reference/   元のキャラクター参考画像
-docs/previews/      README 用アニメーション
-docs/               スプライト一覧・視線一覧・開発ガイド
-scripts/            パッケージの検証
-tests/              インストール・更新・削除・復元のテスト
-install.sh          インストーラー
-```
-
-アニメーションの修正、互換性の報告、翻訳の改善を歓迎します。検証方法は[開発ガイド](docs/development.md)をご覧ください。不具合を報告する際は OS、アプリのバージョン、再現手順を添え、個人のパスや機密情報は伏せてください。
+不自然な動き、インストールの不具合、翻訳の改善を歓迎します。Issue には OS、Codex のバージョン、操作手順、対象の動作や視線方向を添えてください。配布用ペットは `pets/eyjafjalla/` にあります。検証方法は[開発ガイド](docs/development.md)をご覧ください。
 
 ## ライセンス
 
-スクリプトと文書は [MIT ライセンス](LICENSE)で提供します。**キャラクター、美術素材、アニメーションは MIT の対象外です。** 詳細は[素材の権利について](ASSETS.md)をご確認ください。本プロジェクトは非公式のファン作品であり、『アークナイツ』および Codex の開発元・提供元とは関係ありません。
+スクリプトと文書は [MIT](LICENSE) で提供します。キャラクター、美術素材、アニメーションは対象外です。[素材の権利について](ASSETS.md)をご確認ください。本プロジェクトは非公式のファン作品であり、『アークナイツ』および Codex の開発元・提供元による公認や支援を受けていません。
+
+---
+
+[简体中文](README.md) · [English](README.en.md)

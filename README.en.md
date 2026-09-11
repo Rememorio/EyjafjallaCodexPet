@@ -1,96 +1,71 @@
 # Eyjafjalla · 艾雅法拉
 
-**A little company while you code.** An unofficial Arknights fan pet for the Codex desktop app.
+A little company on your desktop.
 
-[简体中文](README.md) · **English** · [日本語](README.ja.md)
-
-[![Validate](https://github.com/Rememorio/EyjafjallaCodexPet/actions/workflows/validate.yml/badge.svg)](https://github.com/Rememorio/EyjafjallaCodexPet/actions/workflows/validate.yml)
-[![License: MIT — code & docs](https://img.shields.io/badge/code_%26_docs-MIT-blue.svg)](LICENSE)
+An unofficial Arknights fan pet for Codex. Eyjafjalla follows your cursor, waves, takes a little hop, and keeps you company while you work.
 
 <p align="center">
-  <img src="docs/previews/idle.gif" width="192" height="208" alt="Eyjafjalla idling">
-  <img src="docs/previews/waving.gif" width="192" height="208" alt="Eyjafjalla waving">
-  <img src="docs/previews/look-loop.gif" width="192" height="208" alt="Eyjafjalla looking around">
+  <img src="docs/previews/look-loop.png" width="96" height="104" alt="Eyjafjalla">
 </p>
 
-Familiar brown curls, horns, red eyes, and a red-and-white outfit. Includes **9 animation states, 16 gaze directions**, and a transparent background, packaged in the Codex v2 pet format.
+[![Validate](https://github.com/Rememorio/EyjafjallaCodexPet/actions/workflows/validate.yml/badge.svg)](https://github.com/Rememorio/EyjafjallaCodexPet/actions/workflows/validate.yml) [![Pet v2](https://img.shields.io/badge/Codex_Pet-v2-f2a1a8)](pets/eyjafjalla/pet.json) [![License: MIT — code & docs](https://img.shields.io/badge/code_%26_docs-MIT-blue.svg)](LICENSE)
 
 ## Install
 
-Run in a terminal:
+Paste this into your terminal. No clone required:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Rememorio/EyjafjallaCodexPet/main/install.sh | bash
 ```
 
-Open **Settings → Pets → Refresh** and select **艾雅法拉 · Eyjafjalla**. Use the command menu or `/pet` to bring it up. Restart the desktop app if the list does not refresh. Menu names may vary by app version; see the [official pet guide](https://learn.chatgpt.com/en/docs/pets).
+Open <strong>Settings → Pets → Refresh</strong> and choose <strong>艾雅法拉 · Eyjafjalla</strong>. Bring her up with the command menu or `/pet`. If an older animation remains visible, select the pet again or restart the app.
 
-Requires a Codex desktop version that supports custom **v2** pets. The Bash installer supports macOS / Linux and requires `curl` and either `shasum` or `sha256sum`. A successful file installation does not guarantee pet support on your platform or app version. This is a local desktop bundle, incompatible with the web uploader's 1536 × 1872 format; it does not sync automatically to the web.
+Requires a Codex desktop version with custom v2 pet support. The Bash installer runs on macOS / Linux using `curl` and a system SHA-256 tool. No `sudo`, Python, or API key is needed.
 
-The destination is `~/.codex/pets/eyjafjalla/`, or `$CODEX_HOME/pets/eyjafjalla/` when configured. No `sudo`, Python, or API key is needed.
+## Your desktop companion
 
-<details>
-<summary>Review the script, install offline, or install manually</summary>
+9 animation states, plus head-and-eye tracking in 16 directions. These previews use the actual packaged frames and playback timings.
 
-Clone the repository to review the script and install the local bundle:
+<table>
+<tr>
+<td align="center" width="240"><strong>Idle</strong><br><img src="docs/previews/idle.png" width="96" height="104" alt="Idle"></td>
+<td align="center" width="240"><strong>Move right</strong><br><img src="docs/previews/running-right.png" width="96" height="104" alt="Move right"></td>
+<td align="center" width="240"><strong>Move left</strong><br><img src="docs/previews/running-left.png" width="96" height="104" alt="Move left"></td>
+</tr>
+<tr>
+<td align="center" width="240"><strong>Wave</strong><br><img src="docs/previews/waving.png" width="96" height="104" alt="Wave"></td>
+<td align="center" width="240"><strong>Hop</strong><br><img src="docs/previews/jumping.png" width="96" height="104" alt="Hop"></td>
+<td align="center" width="240"><strong>Blocked</strong><br><img src="docs/previews/failed.png" width="96" height="104" alt="Blocked"></td>
+</tr>
+<tr>
+<td align="center" width="240"><strong>Waiting</strong><br><img src="docs/previews/waiting.png" width="96" height="104" alt="Waiting"></td>
+<td align="center" width="240"><strong>Working</strong><br><img src="docs/previews/running.png" width="96" height="104" alt="Working"></td>
+<td align="center" width="240"><strong>Reviewing</strong><br><img src="docs/previews/review.png" width="96" height="104" alt="Reviewing"></td>
+</tr>
+</table>
 
-```bash
-git clone https://github.com/Rememorio/EyjafjallaCodexPet.git
-cd EyjafjallaCodexPet
-bash install.sh --source ./pets/eyjafjalla
-```
-
-For manual installation, copy the entire `pets/eyjafjalla/` folder into `pets/` in your Codex data directory. Keep `pet.json` and `spritesheet.webp` together.
-
-To pin a reviewed revision, download `install.sh` from that commit and run `bash install.sh --ref <full-commit-hash>`. Existing branches and tags are also accepted.
-
-</details>
-
-## Animations
-
-| Animation | State |
-| --- | --- |
-| Idle, move right, move left | Everyday company and movement |
-| Wave, jump | Greetings and celebration |
-| Failed, waiting | Task trouble or waiting for input |
-| Working, reviewing | Executing tasks and checking results |
-| 16-direction gaze | Directional looks, plus a neutral frame |
-
-The desktop app determines when each animation plays. Some adjacent gaze directions differ subtly; the animated preview makes these transitions easier to see.
-
-<p align="center">
-  <img src="docs/previews/jumping.gif" width="192" height="208" alt="Jump animation">
-  <img src="docs/previews/running-right.gif" width="192" height="208" alt="Move-right animation">
-</p>
-
-[All animation frames](docs/spritesheet-preview.png) · [16 gaze directions](docs/look-directions.png) · [State transitions](docs/previews/state-transitions.gif)
+Move the cursor to have her look your way; hover for a little hop. Codex controls the working, waiting, and completion states. Lossless APNG previews preserve translucent edges on both light and dark themes.
 
 ## Update and uninstall
 
-**Update:** run the install command again. Identical files are left in place. Changed installations are backed up in full to `pet-backups/eyjafjalla.*/pet/` under your Codex data directory; the script prints the exact location. Download or checksum failures leave the current pet intact.
+<strong>Update</strong>: run the install command again. Identical files stay in place. A new version is verified before the previous directory is backed up and replaced; the installer prints the backup location.
 
-**Uninstall:**
+<strong>Uninstall</strong>:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Rememorio/EyjafjallaCodexPet/main/install.sh | bash -s -- --uninstall
 ```
 
-Uninstalling also preserves a backup. To restore, move any current `pets/eyjafjalla/` aside, copy the backup's `pet/` directory there, and rename it to `eyjafjalla`. Remove old backups manually when no longer needed.
+The default location is `~/.codex/pets/eyjafjalla/`, or the corresponding location under `CODEX_HOME`. Uninstalling also preserves the previous pet for recovery. See [installation options](docs/installation.md) for offline installation, pinned revisions, and restoration.
 
-## Repository and contributions
+## Contribute
 
-```text
-pets/eyjafjalla/     Installable bundle and SHA-256 checksums
-assets/reference/   Original character reference image
-docs/previews/      Animated README previews
-docs/               Sprite previews, gaze chart, development notes
-scripts/            Bundle validation
-tests/              Install, update, uninstall, and recovery tests
-install.sh          Installer entry point
-```
+Reports of awkward animations, installation issues, and translation improvements are welcome. Include your OS, Codex version, trigger, and the affected animation or gaze direction. The installable bundle is in `pets/eyjafjalla/`; see the [development guide](docs/development.md) for validation rules.
 
-Animation fixes, compatibility reports, and translations are welcome. See the [development guide](docs/development.md) for validation commands. Include your OS, app version, and reproduction steps in bug reports; redact private paths and sensitive information.
+## License
 
-## License and attribution
+Scripts and documentation are [MIT licensed](LICENSE). Character designs, artwork, and animations are excluded; see [artwork rights](ASSETS.md). This is an unofficial fan project, unaffiliated with or endorsed by the developers or publishers of Arknights and Codex.
 
-Scripts and documentation are [MIT licensed](LICENSE). **Character designs, artwork, and animations are excluded from MIT**; see [artwork rights](ASSETS.md). This is an unofficial fan project, unaffiliated with the developers or publishers of Arknights and Codex.
+---
+
+[简体中文](README.md) · [日本語](README.ja.md)

@@ -1,0 +1,6 @@
+.DS_Store
+.cadk/
+output/
+.venv/
+__pycache__/
+*.pyc

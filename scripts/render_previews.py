@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Export lossless RGBA previews from the exact installable atlas frames."""
 
+import argparse
 from pathlib import Path
 
 from PIL import Image
@@ -33,7 +34,19 @@ def export_animation(frames, durations, path):
     )
 
 
-def render():
+def transition_frames(sheet, name):
+    """Show state entry, three desktop cycles, then return to ambient idle."""
+    row, durations = ANIMATIONS[name]
+    idle_row, idle_durations = ANIMATIONS["idle"]
+    idle_frames = [cell(sheet, idle_row, col) for col in range(len(idle_durations))]
+    state_frames = [cell(sheet, row, col) for col in range(len(durations))]
+    return (
+        idle_frames + state_frames * 3 + idle_frames,
+        idle_durations + durations * 3 + idle_durations,
+    )
+
+
+def render(transition_dir=None):
     output = ROOT / "docs" / "previews"
     output.mkdir(parents=True, exist_ok=True)
     with Image.open(ROOT / "pets" / "eyjafjalla" / "spritesheet.webp") as sheet:
@@ -48,8 +61,16 @@ def render():
             [cell(sheet, 9 + index // 8, index % 8) for index in range(16)],
             [180] * 16, output / "look-loop.png",
         )
+        if transition_dir is not None:
+            transition_dir.mkdir(parents=True, exist_ok=True)
+            for name in ANIMATIONS:
+                if name != "idle":
+                    frames, durations = transition_frames(sheet, name)
+                    export_animation(frames, durations, transition_dir / f"idle-{name}-idle.png")
     print("Rendered 10 lossless APNG previews at the original 192 × 208 resolution")
 
 
 if __name__ == "__main__":
-    render()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--transition-dir", type=Path, help="Also export state transitions for visual review")
+    render(parser.parse_args().transition_dir)

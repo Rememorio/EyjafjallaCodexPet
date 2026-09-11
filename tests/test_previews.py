@@ -8,10 +8,19 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
-from render_previews import ANIMATIONS, cell
+from render_previews import ANIMATIONS, cell, transition_frames
 
 
 class PreviewTests(unittest.TestCase):
+    def test_jump_transition_returns_to_idle_after_three_cycles(self):
+        with Image.open(ROOT / "pets/eyjafjalla/spritesheet.webp") as sheet:
+            frames, durations = transition_frames(sheet, "jumping")
+            expected = [(0, col) for col in range(6)] + [(4, col) for col in range(5)] * 3 + [(0, col) for col in range(6)]
+            self.assertEqual(len(frames), 27)
+            self.assertEqual(durations, ANIMATIONS["idle"][1] + [140, 140, 140, 140, 280] * 3 + ANIMATIONS["idle"][1])
+            for frame, (row, col) in zip(frames, expected):
+                self.assertEqual(frame.tobytes(), cell(sheet, row, col).tobytes())
+
     def test_previews_preserve_rgba_and_state_timing(self):
         with Image.open(ROOT / "pets/eyjafjalla/spritesheet.webp") as sheet:
             for name, (row, durations) in ANIMATIONS.items():

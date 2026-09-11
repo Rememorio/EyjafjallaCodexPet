@@ -78,7 +78,7 @@ def validate():
                 ratio = (bounds[axis + 2] - bounds[axis]) / (idle[axis + 2] - idle[axis])
                 assert 0.95 <= ratio <= 1.05, f"Idle/jump standing scale mismatch: column {col}"
             assert abs(bounds[3] - idle[3]) <= 2, f"Idle/jump baseline mismatch: column {col}"
-    print("PASS: metadata, SHA-256, v2 atlas, 74 occupied cells, alpha hygiene, palette and jump transitions")
+    print("PASS: metadata, SHA-256, v2 atlas, 74 occupied cells, alpha hygiene, palette and jump standing geometry")
 
 
 if __name__ == "__main__":

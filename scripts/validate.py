@@ -25,6 +25,17 @@ def validate_idle_eyes(sheet):
     assert min(counts) >= max(20, counts[0] * .65), f"Closed or narrowed eyes in slow idle frames: {counts}"
 
 
+def validate_neutral_transitions(sheet):
+    """Front-facing actions must enter and leave through the shared idle pose."""
+    neutral = sheet.crop((0, 0, *CELL)).tobytes()
+    for row, columns in [(0, (5, 6))] + [
+        (row, (0, COUNTS[row] - 1)) for row in range(3, 9)
+    ]:
+        for col in columns:
+            tile = sheet.crop((col * 192, row * 208, (col + 1) * 192, (row + 1) * 208))
+            assert tile.tobytes() == neutral, f"Neutral transition mismatch: {row}/{col}"
+
+
 def validate():
     metadata = json.loads((BUNDLE / "pet.json").read_text())
     assert metadata["id"] == "eyjafjalla", "Unexpected pet ID"
@@ -64,17 +75,8 @@ def validate():
         # misses; row averages would also hide a single flashing frame.
         validate_palette(sheet)
         validate_idle_eyes(sheet)
-        # The first and last jump poses are standing entry/exit poses. Compare
-        # these to idle; airborne crouches legitimately have shorter bounds.
-        silhouette = alpha.point(lambda value: 255 if value >= 128 else 0)
-        idle = silhouette.crop((0, 0, *CELL)).getbbox()
-        for col in (0, 4):
-            bounds = silhouette.crop((col * 192, 832, (col + 1) * 192, 1040)).getbbox()
-            for axis in (0, 1):
-                ratio = (bounds[axis + 2] - bounds[axis]) / (idle[axis + 2] - idle[axis])
-                assert 0.95 <= ratio <= 1.05, f"Idle/jump standing scale mismatch: column {col}"
-            assert abs(bounds[3] - idle[3]) <= 2, f"Idle/jump baseline mismatch: column {col}"
-    print("PASS: metadata, SHA-256, v2 atlas, 74 occupied cells, alpha hygiene, per-frame palette, open-eye idle and jump standing geometry")
+        validate_neutral_transitions(sheet)
+    print("PASS: metadata, SHA-256, v2 atlas, 74 occupied cells, alpha hygiene, per-frame palette, open-eye idle and shared neutral transitions")
 
 
 if __name__ == "__main__":

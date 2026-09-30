@@ -8,13 +8,22 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
-from palette import calibrate_cell, frame, sample, saturation, validate_palette
+from palette import calibrate_cell, frame, sample, saturation, validate_palette, validate_reference_color
 from validate import validate_idle_eyes
 
 
 class PaletteTests(unittest.TestCase):
     def setUp(self):
         self.sheet = Image.open(ROOT / "pets/eyjafjalla/spritesheet.webp").convert("RGBA")
+
+    def test_uniform_old_coral_palette_is_rejected_against_original(self):
+        with self.assertRaisesRegex(AssertionError, "Original-reference hair"):
+            validate_reference_color((198, 126, 116))
+
+    def test_equal_lightness_and_saturation_do_not_hide_wrong_hue(self):
+        # Same extrema as the original, but shifted toward red rather than brown.
+        with self.assertRaisesRegex(AssertionError, "hue drift"):
+            validate_reference_color((204, 152, 139))
 
     def test_single_dark_hover_frame_is_rejected_even_with_same_saturation(self):
         cell = frame(self.sheet, 4, 0)

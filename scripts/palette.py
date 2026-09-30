@@ -3,6 +3,7 @@
 
 import argparse
 from collections import Counter
+from colorsys import rgb_to_hsv
 import json
 from pathlib import Path
 from statistics import median
@@ -10,6 +11,9 @@ from statistics import median
 from PIL import Image, ImageFilter
 
 COUNTS = (7, 8, 8, 4, 5, 8, 6, 6, 6, 8, 8)
+# Opaque crown midtone sampled from assets/reference/eyjafjalla.png.
+# Idle-relative checks alone cannot detect a whole atlas drifting toward coral.
+REFERENCE_CROWN = (204, 155, 139)
 
 
 def frame(sheet, row, col):
@@ -32,6 +36,15 @@ def lightness(rgb):
 
 def saturation(rgb):
     return (max(rgb) - min(rgb)) / max(rgb)
+
+
+def validate_reference_color(rgb):
+    assert abs(lightness(rgb) - lightness(REFERENCE_CROWN)) <= 2, "Original-reference hair lightness drift"
+    assert abs(saturation(rgb) - saturation(REFERENCE_CROWN)) <= .025, "Original-reference hair saturation drift"
+    hue = rgb_to_hsv(*(c / 255 for c in rgb))[0]
+    target = rgb_to_hsv(*(c / 255 for c in REFERENCE_CROWN))[0]
+    distance = abs((hue - target + .5) % 1 - .5) * 360
+    assert distance <= 2.5, "Original-reference hair hue drift"
 
 
 def sample(cell, row):
@@ -75,6 +88,7 @@ def validate_palette(sheet):
         location = f"{p['row']}/{p['column']}"
         assert abs(p["lightness_delta"]) <= 2, f"Hair lightness drift: {location} ({p['lightness_delta']:+.2f} L*)"
         assert abs(p["saturation_delta"]) <= .025, f"Hair saturation drift: {location} ({p['saturation_delta']:+.3f})"
+    validate_reference_color(report["reference"])
     return report
 
 

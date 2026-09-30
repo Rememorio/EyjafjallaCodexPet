@@ -54,7 +54,9 @@ class GazeTests(unittest.TestCase):
             validate_gaze_geometry(self.sheet)
 
     def test_head_vertical_shift_is_rejected(self):
-        tile = frame(self.sheet, 9, 0)
+        # Start at the neutral anchor so a three-pixel mutation cannot cancel
+        # a permitted one-pixel offset in a particular illustrated direction.
+        tile = frame(self.sheet, 0, 6)
         head = tile.crop((0, 0, 192, 96))
         tile.paste((0, 0, 0, 0), (0, 0, 192, 96))
         tile.paste(head.crop((0, 3, 192, 96)), (0, 0))

@@ -36,6 +36,33 @@ def validate_neutral_transitions(sheet):
             assert tile.tobytes() == neutral, f"Neutral transition mismatch: {row}/{col}"
 
 
+def validate_gaze_geometry(sheet):
+    """Looking changes the head, never the standing body or character scale."""
+    neutral = sheet.crop((6 * 192, 0, 7 * 192, 208))
+    body_box = (0, 112, 192, 208)
+    body = neutral.crop(body_box).tobytes()
+
+    def head_metrics(tile):
+        # Exclude the neck blend and long hair. Opaque geometry avoids counting
+        # faint antialiasing pixels as a change in size.
+        mask = tile.getchannel("A").crop((0, 0, 192, 96)).point(lambda a: 255 if a >= 128 else 0)
+        bounds = mask.getbbox()
+        assert bounds, "Missing gaze head"
+        left, top, right, _ = bounds
+        return right - left, top, (left + right) / 2, sum(mask.histogram()[1:])
+
+    width, top, center, area = head_metrics(neutral)
+    for row in (9, 10):
+        for col in range(8):
+            tile = sheet.crop((col * 192, row * 208, (col + 1) * 192, (row + 1) * 208))
+            location = f"{row}/{col}"
+            assert tile.crop(body_box).tobytes() == body, f"Gaze body mismatch: {location}"
+            w, t, c, a = head_metrics(tile)
+            assert abs(w / width - 1) <= .05, f"Gaze head width drift: {location}"
+            assert abs(a / area - 1) <= .05, f"Gaze head area drift: {location}"
+            assert abs(t - top) <= 2 and abs(c - center) <= 4, f"Gaze head anchor drift: {location}"
+
+
 def validate():
     metadata = json.loads((BUNDLE / "pet.json").read_text())
     assert metadata["id"] == "eyjafjalla", "Unexpected pet ID"
@@ -76,7 +103,8 @@ def validate():
         validate_palette(sheet)
         validate_idle_eyes(sheet)
         validate_neutral_transitions(sheet)
-    print("PASS: metadata, SHA-256, v2 atlas, 74 occupied cells, alpha hygiene, per-frame palette, open-eye idle and shared neutral transitions")
+        validate_gaze_geometry(sheet)
+    print("PASS: metadata, SHA-256, v2 atlas, 74 occupied cells, alpha hygiene, per-frame palette, open-eye idle, shared neutral transitions and stable gaze geometry")
 
 
 if __name__ == "__main__":

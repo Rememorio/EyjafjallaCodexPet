@@ -9,7 +9,7 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 from palette import frame
-from validate import validate_gaze_geometry
+from validate import validate_gaze_geometry, validate_gaze_face_continuity
 
 
 class GazeTests(unittest.TestCase):
@@ -63,6 +63,46 @@ class GazeTests(unittest.TestCase):
         self.replace(tile)
         with self.assertRaisesRegex(AssertionError, "Gaze head anchor drift: 9/0"):
             validate_gaze_geometry(self.sheet)
+
+    def test_face_shift_inside_unchanged_head_is_rejected(self):
+        tile = frame(self.sheet, 9, 0)
+        alpha = tile.getchannel("A").tobytes()
+        original = tile.copy()
+        # Move only facial color content, preserving every silhouette pixel.
+        for y in range(62, 112):
+            for x in range(54, 138):
+                rgb = original.getpixel((x - 12, y))[:3]
+                tile.putpixel((x, y), rgb + (original.getpixel((x, y))[3],))
+        self.assertEqual(alpha, tile.getchannel("A").tobytes())
+        self.replace(tile)
+        with self.assertRaisesRegex(AssertionError, "Gaze face anchor jump"):
+            validate_gaze_face_continuity(self.sheet)
+
+    def test_face_area_jump_inside_unchanged_head_is_rejected(self):
+        # A crop is narrower than the head mask, leaving head geometry intact.
+        tile = frame(self.sheet, 10, 7)
+        alpha = tile.getchannel("A").tobytes()
+        for y in range(62, 112):
+            for x in range(76, 116):
+                r, g, b, a = tile.getpixel((x, y))
+                if r > 235 and g > 215 and b > 185:
+                    tile.putpixel((x, y), (204, 155, 139, a))
+        self.assertEqual(alpha, tile.getchannel("A").tobytes())
+        self.sheet.paste(tile, (7 * 192, 10 * 208))
+        with self.assertRaisesRegex(AssertionError, "Gaze face (area|anchor) jump|Missing gaze face"):
+            validate_gaze_face_continuity(self.sheet)
+
+    def test_gradual_face_drift_is_rejected_at_closing_loop_boundary(self):
+        original = frame(self.sheet, 9, 0)
+        for index in range(16):
+            tile = original.copy()
+            for y in range(62, 112):
+                for x in range(54, 138):
+                    rgb = original.getpixel((x - index // 2, y))[:3]
+                    tile.putpixel((x, y), rgb + (original.getpixel((x, y))[3],))
+            self.sheet.paste(tile, (index % 8 * 192, (9 + index // 8) * 208))
+        with self.assertRaisesRegex(AssertionError, "Gaze face anchor jump: 337.5 -> 0"):
+            validate_gaze_face_continuity(self.sheet)
 
 
 if __name__ == "__main__":

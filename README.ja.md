@@ -5,7 +5,7 @@
 『アークナイツ』のエイヤフィヤトラを題材にした非公式の Codex ペットです。カーソルを目で追い、手を振り、小さく跳ねながら、作業の時間に寄り添います。
 
 <p align="center">
-  <img src="docs/previews/look-loop.png" width="96" height="104" alt="Eyjafjalla">
+  <img src="docs/previews/idle.png" width="96" height="104" alt="Eyjafjalla">
 </p>
 
 [![Validate](https://github.com/Rememorio/EyjafjallaCodexPet/actions/workflows/validate.yml/badge.svg)](https://github.com/Rememorio/EyjafjallaCodexPet/actions/workflows/validate.yml) [![Pet v2](https://img.shields.io/badge/Codex_Pet-v2-f2a1a8)](pets/eyjafjalla/pet.json) [![License: MIT — code & docs](https://img.shields.io/badge/code_%26_docs-MIT-blue.svg)](LICENSE)
@@ -45,6 +45,14 @@ curl -fsSL https://raw.githubusercontent.com/Rememorio/EyjafjallaCodexPet/main/i
 </table>
 
 カーソルの方向へ顔を向け、重ねると小さくジャンプします。作業中・返事待ち・完了などの状態は Codex が切り替えます。プレビューは可逆圧縮の APNG で、半透明の輪郭を保ち、ライト・ダーク両方のテーマに対応します。
+
+## 16 方向のカーソル追従
+
+<p align="center">
+  <img src="docs/previews/look-demo.png" width="288" height="282" alt="時計回りに16方向を見るエイヤフィヤトラ。青い点はカーソル位置">
+</p>
+
+青い点はカーソルの方向を示します。上が 0°、右が 90°、下が 180°、左が 270° の時計回りです。このデモでは各方向を 320 ms 表示しますが、デスクトップではカーソルの位置に合わせて切り替わります。キャラクターには配布パッケージの元フレームを使用しています。[全方向の比較画像](docs/look-directions.png)も確認できます。
 
 ## 更新とアンインストール
 

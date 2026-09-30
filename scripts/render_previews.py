@@ -2,12 +2,16 @@
 """Export lossless RGBA previews from the exact installable atlas frames."""
 
 import argparse
+import math
 from pathlib import Path
 
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parents[1]
 CELL = (192, 208)
+LOOK_DURATION = 320
+LOOK_DEMO_SIZE = (384, 376)
+LOOK_DEMO_ORIGIN = (96, 64)
 # Desktop state timings. Idle uses the slower ambient breathing cadence.
 ANIMATIONS = {
     "idle": (0, [1680, 660, 660, 840, 840, 1920]),
@@ -32,6 +36,22 @@ def export_animation(frames, durations, path):
         path, format="PNG", save_all=True, append_images=frames[1:],
         duration=durations, loop=0, disposal=0, blend=0,
     )
+
+
+def look_demo_frame(sprite, index):
+    """Add a cursor target outside the unchanged sprite's native cell."""
+    preview = Image.new("RGBA", LOOK_DEMO_SIZE)
+    draw = ImageDraw.Draw(preview)
+    angle = math.radians(index * 22.5)
+    x = round(192 + 156 * math.sin(angle))
+    y = round(168 - 156 * math.cos(angle))
+    draw.ellipse((x - 5, y - 5, x + 5, y + 5), fill="#5dafff", outline="white", width=2)
+    label = f"{index * 22.5:g}°"
+    font = ImageFont.load_default(size=20)
+    bounds = draw.textbbox((0, 0), label, font=font)
+    draw.text(((preview.width - bounds[2]) // 2, 350), label, fill="#888888", font=font)
+    preview.paste(sprite, LOOK_DEMO_ORIGIN)
+    return preview
 
 
 def transition_frames(sheet, name):
@@ -91,9 +111,11 @@ def render(transition_dir=None):
             )
         # Cursor-controlled poses have no autoplay timing. This loop simply
         # demonstrates the sixteen directions at evenly spaced intervals.
+        looks = [cell(sheet, 9 + index // 8, index % 8) for index in range(16)]
+        export_animation(looks, [LOOK_DURATION] * 16, output / "look-loop.png")
         export_animation(
-            [cell(sheet, 9 + index // 8, index % 8) for index in range(16)],
-            [180] * 16, output / "look-loop.png",
+            [look_demo_frame(sprite, index) for index, sprite in enumerate(looks)],
+            [LOOK_DURATION] * 16, output / "look-demo.png",
         )
         export_contact_sheets(sheet)
         if transition_dir is not None:
@@ -102,7 +124,7 @@ def render(transition_dir=None):
                 if name != "idle":
                     frames, durations = transition_frames(sheet, name)
                     export_animation(frames, durations, transition_dir / f"idle-{name}-idle.png")
-    print("Rendered 10 lossless APNG previews at the original 192 × 208 resolution")
+    print("Rendered 10 native lossless APNG previews and an annotated gaze demo")
 
 
 if __name__ == "__main__":

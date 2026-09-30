@@ -5,7 +5,7 @@ A little company on your desktop.
 An unofficial Arknights fan pet for Codex. Eyjafjalla follows your cursor, waves, takes a little hop, and keeps you company while you work.
 
 <p align="center">
-  <img src="docs/previews/look-loop.png" width="96" height="104" alt="Eyjafjalla">
+  <img src="docs/previews/idle.png" width="96" height="104" alt="Eyjafjalla">
 </p>
 
 [![Validate](https://github.com/Rememorio/EyjafjallaCodexPet/actions/workflows/validate.yml/badge.svg)](https://github.com/Rememorio/EyjafjallaCodexPet/actions/workflows/validate.yml) [![Pet v2](https://img.shields.io/badge/Codex_Pet-v2-f2a1a8)](pets/eyjafjalla/pet.json) [![License: MIT — code & docs](https://img.shields.io/badge/code_%26_docs-MIT-blue.svg)](LICENSE)
@@ -45,6 +45,14 @@ Requires a Codex desktop version with custom v2 pet support. The Bash installer 
 </table>
 
 Move the cursor to have her look your way; hover for a little hop. Codex controls the working, waiting, and completion states. Lossless APNG previews preserve translucent edges on both light and dark themes.
+
+## Following the cursor in 16 directions
+
+<p align="center">
+  <img src="docs/previews/look-demo.png" width="288" height="282" alt="Eyjafjalla looking clockwise in 16 directions; the blue dot marks the cursor position">
+</p>
+
+The blue dot shows the cursor direction: up at 0°, right at 90°, down at 180°, and left at 270°, clockwise. Each pose appears for 320 ms in this demo; the desktop pet follows your cursor rather than looping on its own. The character uses the original packaged frames. See the [complete direction chart](docs/look-directions.png) for a static comparison.
 
 ## Update and uninstall
 

@@ -61,6 +61,31 @@ def validate_gaze_geometry(sheet):
             assert abs(w / width - 1) <= .05, f"Gaze head width drift: {location}"
             assert abs(a / area - 1) <= .05, f"Gaze head area drift: {location}"
             assert abs(t - top) <= 2 and abs(c - center) <= 4, f"Gaze head anchor drift: {location}"
+    validate_gaze_face_continuity(sheet)
+
+
+def validate_gaze_face_continuity(sheet):
+    """A stable hair silhouette must not hide a face that jumps or changes size."""
+    faces = []
+    for index in range(16):
+        row, col = 9 + index // 8, index % 8
+        tile = sheet.crop((col * 192, row * 208, (col + 1) * 192, (row + 1) * 208))
+        # Measure the pale face and sclera below the fringe, excluding red
+        # irises, pink-brown hair and costume. Include eye whites so a natural
+        # change in visible sclera cannot masquerade as a change in face size.
+        points = []
+        for y in range(62, 112):
+            for x in range(54, 138):
+                r, g, b, a = tile.getpixel((x, y))
+                if a > 128 and r > 235 and g > 205 and b > 180 and 0 <= r - g < 50 and -5 < g - b < 45:
+                    points.append((x, y))
+        assert len(points) >= 200, f"Missing gaze face: {row}/{col}"
+        faces.append((len(points), sum(x for x, _ in points) / len(points), sum(y for _, y in points) / len(points)))
+    # Include both row boundaries and the closing 337.5° -> 0° transition.
+    for index, (first, second) in enumerate(zip(faces, faces[1:] + faces[:1])):
+        location = f"{index * 22.5:g} -> {(index + 1) % 16 * 22.5:g}"
+        assert max(abs(first[1] - second[1]), abs(first[2] - second[2])) <= 4, f"Gaze face anchor jump: {location}"
+        assert max(first[0], second[0]) / min(first[0], second[0]) <= 1.35, f"Gaze face area jump: {location}"
 
 
 def validate():
@@ -104,7 +129,7 @@ def validate():
         validate_idle_eyes(sheet)
         validate_neutral_transitions(sheet)
         validate_gaze_geometry(sheet)
-    print("PASS: metadata, SHA-256, v2 atlas, 74 occupied cells, alpha hygiene, per-frame palette, open-eye idle, shared neutral transitions and stable gaze geometry")
+    print("PASS: metadata, SHA-256, v2 atlas, 74 occupied cells, alpha hygiene, per-frame palette, open-eye idle, shared neutral transitions, stable gaze geometry and face continuity")
 
 
 if __name__ == "__main__":

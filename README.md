@@ -5,7 +5,7 @@
 《明日方舟》艾雅法拉的非官方 Codex 宠物。会望向鼠标、挥手、小跳，也会在你工作时安静陪伴。
 
 <p align="center">
-  <img src="docs/previews/look-loop.png" width="96" height="104" alt="Eyjafjalla">
+  <img src="docs/previews/idle.png" width="96" height="104" alt="Eyjafjalla">
 </p>
 
 [![Validate](https://github.com/Rememorio/EyjafjallaCodexPet/actions/workflows/validate.yml/badge.svg)](https://github.com/Rememorio/EyjafjallaCodexPet/actions/workflows/validate.yml) [![Pet v2](https://img.shields.io/badge/Codex_Pet-v2-f2a1a8)](pets/eyjafjalla/pet.json) [![License: MIT — code & docs](https://img.shields.io/badge/code_%26_docs-MIT-blue.svg)](LICENSE)
@@ -45,6 +45,14 @@ curl -fsSL https://raw.githubusercontent.com/Rememorio/EyjafjallaCodexPet/main/i
 </table>
 
 鼠标移到不同位置时，她会转头看向你；悬停时轻轻小跳。工作、等待与完成时的状态切换由 Codex 控制。预览使用无损 APNG，保留半透明边缘，在浅色、深色主题下都可显示。
+
+## 16 向鼠标跟随
+
+<p align="center">
+  <img src="docs/previews/look-demo.png" width="288" height="282" alt="艾雅法拉顺时针看向 16 个方向，蓝点标示鼠标位置">
+</p>
+
+蓝点示意鼠标方向：从正上方 0° 开始，顺时针经过右侧 90°、下方 180°、左侧 270°。每个方向展示 320 ms；桌面宠物实际按鼠标位置切换，不会自行绕圈。图中角色直接使用宠物包的原始帧。也可查看[全部方向对照](docs/look-directions.png)。
 
 ## 更新与卸载
 

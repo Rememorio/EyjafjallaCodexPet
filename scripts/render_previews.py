@@ -4,7 +4,7 @@
 import argparse
 from pathlib import Path
 
-from PIL import Image
+from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parents[1]
 CELL = (192, 208)
@@ -46,6 +46,40 @@ def transition_frames(sheet, name):
     )
 
 
+def export_contact_sheets(sheet):
+    """Keep the static atlas and cursor-direction documentation current too."""
+    counts = (7, 8, 8, 4, 5, 8, 6, 6, 6, 8, 8)
+    names = [*ANIMATIONS, "look 000-157.5", "look 180-337.5"]
+    overview = Image.new("RGB", (768, 1386), "#111111")
+    draw = ImageDraw.Draw(overview)
+    for row, (name, count) in enumerate(zip(names, counts)):
+        top = row * 126
+        draw.text((6, top + 5), f"row {row}: {name}", fill="white")
+        for col in range(8):
+            x, y = col * 96, top + 22
+            for sy in range(0, 104, 16):
+                for sx in range(0, 96, 16):
+                    color = "#e7e7e7" if (sx // 16 + sy // 16) % 2 else "#fafafa"
+                    draw.rectangle((x + sx, y + sy, x + min(sx + 15, 95), y + min(sy + 15, 103)), fill=color)
+            sprite = cell(sheet, row, col).resize((96, 104), Image.Resampling.LANCZOS)
+            overview.paste(sprite, (x, y), sprite)
+            draw.rectangle((x, y, x + 95, y + 103), outline="#59a879" if col < count else "#bd5663")
+            draw.text((x + 3, y + 3), str(col), fill="black")
+    overview.save(ROOT / "docs/spritesheet-preview.png")
+
+    directions = Image.new("RGB", (1536, 702), "white")
+    draw = ImageDraw.Draw(directions)
+    poses = [(0, 6, 0, 0, "neutral")]
+    poses += [(9 + i // 8, i % 8, i % 8, 1 + i // 8, f"{i * 22.5:g} degrees") for i in range(16)]
+    for row, col, x, y, label in poses:
+        x, y = x * 192, y * 234
+        draw.text((x + 6, y + 7), label, fill="black")
+        draw.rectangle((x, y + 26, x + 191, y + 233), fill="#f1f1f1")
+        sprite = cell(sheet, row, col)
+        directions.paste(sprite, (x, y + 26), sprite)
+    directions.save(ROOT / "docs/look-directions.png")
+
+
 def render(transition_dir=None):
     output = ROOT / "docs" / "previews"
     output.mkdir(parents=True, exist_ok=True)
@@ -61,6 +95,7 @@ def render(transition_dir=None):
             [cell(sheet, 9 + index // 8, index % 8) for index in range(16)],
             [180] * 16, output / "look-loop.png",
         )
+        export_contact_sheets(sheet)
         if transition_dir is not None:
             transition_dir.mkdir(parents=True, exist_ok=True)
             for name in ANIMATIONS:

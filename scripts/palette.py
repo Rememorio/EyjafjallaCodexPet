@@ -28,6 +28,14 @@ def dominant(pixels):
     return tuple(median(rgb[i] for rgb in selected) for i in range(3))
 
 
+def shadow_quartile(pixels):
+    """A stable dark material anchor, independent of the most frequent bin."""
+    assert len(pixels) >= 30, "Insufficient shadow samples"
+    ordered = sorted(pixels, key=lightness)
+    selected = ordered[round(len(ordered) * .20):round(len(ordered) * .30)]
+    return tuple(median(rgb[i] for rgb in selected) for i in range(3))
+
+
 def lightness(rgb):
     linear = [c / 255 / 12.92 if c / 255 <= .04045 else ((c / 255 + .055) / 1.055) ** 2.4 for c in rgb]
     y = sum(c * w for c, w in zip(linear, (.2126, .7152, .0722)))
@@ -64,7 +72,8 @@ def sample(cell, row):
                 shadow.append((r, g, b))
             if .25 < xn < .75 and .28 < yn < .55 and r > 225 and g > 195 and b > 160 and r - g > 5 and r - b > 15 and 2 < g - b < 35:
                 skin.append((r, g, b))
-    return {"crown": dominant(crown), "shadow": dominant(shadow) if row not in (1, 2) else None, "skin": dominant(skin)}
+    return {"crown": dominant(crown), "shadow": dominant(shadow) if row not in (1, 2) else None,
+            "shadow_quartile": shadow_quartile(shadow) if row not in (1, 2) else None, "skin": dominant(skin)}
 
 
 def median_color(colors):
@@ -88,6 +97,14 @@ def validate_palette(sheet):
         location = f"{p['row']}/{p['column']}"
         assert abs(p["lightness_delta"]) <= 2, f"Hair lightness drift: {location} ({p['lightness_delta']:+.2f} L*)"
         assert abs(p["saturation_delta"]) <= .025, f"Hair saturation drift: {location} ({p['saturation_delta']:+.3f})"
+    # Working retains the same frontal pose and lighting as idle. Crown-only
+    # checks miss dark side locks; a histogram mode can jump between shades.
+    shadow = median_color([p["shadow_quartile"] for p in report["frames"] if p["row"] == 0 and p["column"] < 6])
+    for p in report["frames"]:
+        if p["row"] == 7:
+            delta = lightness(p["shadow_quartile"]) - lightness(shadow)
+            assert abs(delta) <= 1, f"Working hair shadow lightness drift: 7/{p['column']} ({delta:+.2f} L*)"
+            assert abs(saturation(p["shadow_quartile"]) - saturation(shadow)) <= .025, f"Working hair shadow saturation drift: 7/{p['column']}"
     validate_reference_color(report["reference"])
     return report
 
@@ -100,13 +117,14 @@ def calibrate_cell(cell, row, source_crown, source_shadow, target_crown, target_
     """Blend two material anchors; keep alpha, facial features and clothing intact."""
     out = cell.copy()
     x0, y0, x1, y1 = cell.getbbox()
-    # Protect saturated iris pixels and their immediate antialiasing neighbors.
+    # Pink irises have blue >= green; warm brown locks can otherwise satisfy
+    # the same red-dominance test and incorrectly block shadow calibration.
     eyes = Image.new("L", cell.size)
     for y in range(y0, y1):
         for x in range(x0, x1):
             r, g, b, a = cell.getpixel((x, y))
             xn, yn = (x - x0) / (x1 - x0), (y - y0) / (y1 - y0)
-            if a and .25 < yn < .56 and r > 1.9 * max(g, b) and r > 80:
+            if a and .25 < yn < .56 and r > 1.9 * max(g, b) and r > 80 and b >= g:
                 eyes.putpixel((x, y), 255)
     eyes = eyes.filter(ImageFilter.MaxFilter(9))
     for y in range(y0, y1):
@@ -132,6 +150,7 @@ def calibrate(sheet, reference):
     target = [sample(frame(reference, 0, col), 0) for col in range(6)]
     tc = median_color([p["crown"] for p in target])
     ts = median_color([p["shadow"] for p in target])
+    working_shadow = median_color([p["shadow_quartile"] for p in target])
     out = sheet.copy()
     for row, count in enumerate(COUNTS):
         cells = [frame(sheet, row, col) for col in range(count)]
@@ -139,7 +158,9 @@ def calibrate(sheet, reference):
         # Side-pose shadow exposure differs; retain its existing shadow palette.
         shadow = median_color([p["shadow"] for p in samples]) if row not in (1, 2) else ts
         for col, (cell, p) in enumerate(zip(cells, samples)):
-            out.paste(calibrate_cell(cell, row, p["crown"], shadow, tc, ts), (col * 192, row * 208))
+            source_shadow = p["shadow_quartile"] if row == 7 else shadow
+            target_shadow = working_shadow if row == 7 else ts
+            out.paste(calibrate_cell(cell, row, p["crown"], source_shadow, tc, target_shadow), (col * 192, row * 208))
     return out
 
 

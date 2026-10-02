@@ -47,6 +47,32 @@ class PaletteTests(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, "Closed or narrowed eyes"):
             validate_idle_eyes(self.sheet)
 
+    def test_dark_working_locks_are_rejected_with_unchanged_crown(self):
+        cell = frame(self.sheet, 7, 2)
+        before = sample(cell, 7)["crown"]
+        x0, y0, x1, y1 = cell.getbbox()
+        for y in range(y0, y1):
+            for x in range(x0, x1):
+                r, g, b, a = cell.getpixel((x, y))
+                xn, yn = (x - x0) / (x1 - x0), (y - y0) / (y1 - y0)
+                if a >= 250 and (xn < .28 or xn > .72) and .36 < yn < .70 and r > g + 25 and 0 < g - b < 30 and 65 < b and r < 190:
+                    cell.putpixel((x, y), tuple(round(c * .94) for c in (r, g, b)) + (a,))
+        self.assertEqual(before, sample(cell, 7)["crown"])
+        self.sheet.paste(cell, (2 * 192, 7 * 208))
+        with self.assertRaisesRegex(AssertionError, "Working hair shadow lightness drift: 7/2"):
+            validate_palette(self.sheet)
+
+    def test_brown_locks_do_not_block_calibration_as_false_irises(self):
+        cell = Image.new("RGBA", (192, 208), (204, 155, 139, 255))
+        brown, iris = (145, 70, 67, 255), (175, 60, 70, 255)
+        cell.putpixel((45, 90), brown)
+        cell.putpixel((80, 90), iris)
+        changed = calibrate_cell(cell, 7, (204, 155, 139), brown[:3],
+                                 (204, 155, 139), (150, 78, 75))
+        self.assertNotEqual(changed.getpixel((45, 90)), brown)
+        self.assertEqual(changed.getpixel((80, 90)), iris)
+        self.assertEqual(cell.getchannel("A").tobytes(), changed.getchannel("A").tobytes())
+
     def test_color_calibration_preserves_alpha_irises_and_boots(self):
         cell = frame(self.sheet, 0, 0)
         colors = sample(cell, 0)
